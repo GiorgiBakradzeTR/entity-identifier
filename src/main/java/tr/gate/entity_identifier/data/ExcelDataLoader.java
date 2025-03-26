@@ -1,4 +1,4 @@
-package tr.gate.entity_identifier;
+package tr.gate.entity_identifier.data;
 
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
@@ -13,11 +13,12 @@ import java.util.Map;
 @Slf4j
 public class ExcelDataLoader {
 
+    private static final String INPUT_XML_FILE = "gold-data.xlsx";
     private final Map<String, String> excelData = new HashMap<>();
 
     @PostConstruct
-    public void loadExcelData() throws IOException {
-       try (InputStream inputStream = new FileInputStream("FlexSamples.xlsx");
+    public void loadExcelData() {
+       try (InputStream inputStream = new FileInputStream(INPUT_XML_FILE);
             Workbook workbook = WorkbookFactory.create(inputStream)) {
 
 

@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class Entity {
     private String id;
     private String name;
+    private String type;
 }
