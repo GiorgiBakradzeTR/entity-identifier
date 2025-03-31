@@ -31,30 +31,31 @@ public class TaggerService {
     private final ExcelDataLoader excelDataLoader;
 
     private final ExcelDocumentService excelDocumentService;
+    private final ONLPPersonEntityService onlpPersonEntityService;
 
 
     public DocumentResponse processRow(String text, String expectedOutput, boolean isLastRow) {
-        DocumentResponse response = callTaggerService(text);
 
-        List<String> namesFromResponse = extractNamesFromResponse(response);
+        List<String> namesFromOpenNLP = onlpPersonEntityService.identifyPersonNames(text);
         List<String> namesInExpectedOutput = extractNamesFromExpectedOutput(expectedOutput);
-        String difference = compareNamesWithExpectedOutputContent(namesFromResponse,
+        String difference = compareNamesWithExpectedOutputContent(namesFromOpenNLP,
                 namesInExpectedOutput);
 
         // TODO: Calculate Match count and Precision %
-        Accuracy accuracy = calculateAccuracy(namesFromResponse, namesInExpectedOutput);
+        Accuracy accuracy = calculateAccuracy(namesFromOpenNLP, namesInExpectedOutput);
 
-        excelDocumentService.writeDataToExcelFile(text, expectedOutput, namesFromResponse,
+        excelDocumentService.writeDataToExcelFile(text, expectedOutput, namesFromOpenNLP,
                 namesInExpectedOutput, difference, accuracy, isLastRow);
 
         return DocumentResponse.builder()
-                .entity(response.getEntity())
-                .names(namesFromResponse)
+               // .entity(response.getEntity())
+                .names(namesFromOpenNLP)
                 .difference(difference)
                 .expectedOutput(expectedOutput)
                 .expectedNames(namesInExpectedOutput)
                 .build();
     }
+
 
     private Accuracy calculateAccuracy(List<String> namesFromResponse, List<String> namesInExpectedOutput) {
 
