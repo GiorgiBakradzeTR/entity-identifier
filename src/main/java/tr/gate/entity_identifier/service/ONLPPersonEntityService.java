@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class ONLPPersonEntityService implements EntityService {
@@ -32,7 +34,7 @@ public class ONLPPersonEntityService implements EntityService {
 
         Span[] nameSpans = nameFinder.find(tokens);
 
-        List<String> personNames = new ArrayList<>();
+        Set<String> personNames = new HashSet<>();
         for (Span span : nameSpans) {
             StringBuilder name = new StringBuilder();
             for (int i = span.getStart(); i < span.getEnd(); i++) {
@@ -40,6 +42,6 @@ public class ONLPPersonEntityService implements EntityService {
             }
             personNames.add(name.toString().trim());
         }
-        return personNames;
+        return new ArrayList<>(personNames);
     }
 }
