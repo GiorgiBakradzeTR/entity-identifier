@@ -31,25 +31,23 @@ public class TaggerService {
     private final ExcelDataLoader excelDataLoader;
 
     private final ExcelDocumentService excelDocumentService;
+    private final SNLPPersonEntityService snlpPersonEntityService;
 
 
     public DocumentResponse processRow(String text, String expectedOutput, boolean isLastRow) {
-        DocumentResponse response = callTaggerService(text);
-
-        List<String> namesFromResponse = extractNamesFromResponse(response);
+        List<String> identifiedNamesUsingSNLP = snlpPersonEntityService.identifyPersonNames(text);
         List<String> namesInExpectedOutput = extractNamesFromExpectedOutput(expectedOutput);
-        String difference = compareNamesWithExpectedOutputContent(namesFromResponse,
+        String difference = compareNamesWithExpectedOutputContent(identifiedNamesUsingSNLP,
                 namesInExpectedOutput);
 
-        // TODO: Calculate Match count and Precision %
-        Accuracy accuracy = calculateAccuracy(namesFromResponse, namesInExpectedOutput);
+        Accuracy accuracy = calculateAccuracy(identifiedNamesUsingSNLP, namesInExpectedOutput);
 
-        excelDocumentService.writeDataToExcelFile(text, expectedOutput, namesFromResponse,
+        excelDocumentService.writeDataToExcelFile(text, expectedOutput, identifiedNamesUsingSNLP,
                 namesInExpectedOutput, difference, accuracy, isLastRow);
 
         return DocumentResponse.builder()
-                .entity(response.getEntity())
-                .names(namesFromResponse)
+                //.entity(response.getEntity())
+                .names(identifiedNamesUsingSNLP)
                 .difference(difference)
                 .expectedOutput(expectedOutput)
                 .expectedNames(namesInExpectedOutput)
