@@ -8,9 +8,7 @@ import edu.stanford.nlp.util.CoreMap;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -28,7 +26,7 @@ public class SNLPPersonEntityService implements EntityService {
     @Override
     public List<String> identifyPersonNames(String text) {
         log.info("Inside SNLP Entity Service");
-        List<String> personNames = new ArrayList<>();
+        Set<String> personNames = new HashSet<>();
         CoreDocument document = new CoreDocument(text);
         stanfordCoreNLP.annotate(document);
 
@@ -52,6 +50,6 @@ public class SNLPPersonEntityService implements EntityService {
                 personNames.add(currentName.toString());
             }
         }
-        return personNames;
+        return new ArrayList<>(personNames);
     }
 }
