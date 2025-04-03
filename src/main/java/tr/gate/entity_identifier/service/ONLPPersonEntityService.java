@@ -16,6 +16,8 @@ import java.util.Set;
 @Service
 public class ONLPPersonEntityService implements EntityService {
 
+    public static final String PERIOD_SYMBOL = ".";
+    public static final String WHITESPACE = " ";
     private final NameFinderME nameFinder;
 
     public ONLPPersonEntityService() throws IOException {
@@ -38,7 +40,13 @@ public class ONLPPersonEntityService implements EntityService {
         for (Span span : nameSpans) {
             StringBuilder name = new StringBuilder();
             for (int i = span.getStart(); i < span.getEnd(); i++) {
-                name.append(tokens[i]).append(" ");
+                name.append(tokens[i]);
+                if (tokens[i].equals(PERIOD_SYMBOL)) {
+                    name.setLength(name.length() - 2);
+                    name.append(tokens[i]);
+                }
+                name.append(WHITESPACE);
+
             }
             personNames.add(name.toString().trim());
         }
