@@ -1,5 +1,6 @@
 package tr.gate.entity_identifier.service;
 
+import lombok.extern.slf4j.Slf4j;
 import opennlp.tools.namefind.NameFinderME;
 import opennlp.tools.namefind.TokenNameFinderModel;
 import opennlp.tools.tokenize.SimpleTokenizer;
@@ -8,11 +9,13 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+@Slf4j
 @Service
 public class ONLPPersonEntityService implements EntityService {
 
@@ -30,7 +33,11 @@ public class ONLPPersonEntityService implements EntityService {
         }
     }
 
-    public List<String> identifyPersonNames(String text) {
+    public List<String> identifyPersonNames(String input) {
+        String text = input.trim();
+        text = removeTrailingPeriodSymbolIfPresent(text);
+        log.info("text bytes: {}", text.getBytes(StandardCharsets.UTF_8));
+
         SimpleTokenizer tokenizer = SimpleTokenizer.INSTANCE;
         String[] tokens = tokenizer.tokenize(text);
 
@@ -46,10 +53,17 @@ public class ONLPPersonEntityService implements EntityService {
                     name.append(tokens[i]);
                 }
                 name.append(WHITESPACE);
-
             }
             personNames.add(name.toString().trim());
         }
+        log.info("personNames: {}", personNames);
         return new ArrayList<>(personNames);
+    }
+
+    private static String removeTrailingPeriodSymbolIfPresent(String text) {
+        if (text.endsWith(".")) {
+            text = text.substring(0, text.length() - 1);
+        }
+        return text;
     }
 }
