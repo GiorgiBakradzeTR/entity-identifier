@@ -61,7 +61,7 @@ public class ONLPPersonEntityService implements EntityService {
     }
 
     private static String removeTrailingPeriodSymbolIfPresent(String text) {
-        if (text.endsWith(".")) {
+        if (text.endsWith(PERIOD_SYMBOL)) {
             text = text.substring(0, text.length() - 1);
         }
         return text;
