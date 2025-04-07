@@ -36,4 +36,12 @@ class ONLPPersonEntityServiceTest {
 
         assertTrue(result.contains("Eliot Lee Grossman"));
     }
+
+    @Test
+    public void testIdentifyNames_withOnlyLastNameAllUppercases() {
+        String input = "GREENBERG, Circuit Judge. \n";
+        List<String> result = onlpPersonEntityService.identifyPersonNames(input);
+
+        assertTrue(result.contains("GREENBERG"));
+    }
 }

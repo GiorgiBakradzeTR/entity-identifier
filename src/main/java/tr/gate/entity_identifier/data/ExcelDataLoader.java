@@ -23,12 +23,16 @@ public class ExcelDataLoader {
 
 
            Sheet sheet = workbook.getSheetAt(0);
+           DataFormatter dataFormatter = new DataFormatter();
            for (Row row : sheet) {
                Cell inputTextCell = row.getCell(0);
                Cell outputTextCell = row.getCell(1);
                if (inputTextCell != null && outputTextCell != null
-               && !inputTextCell.getStringCellValue().equals("Input")) {
-                   excelData.put(inputTextCell.getStringCellValue(), outputTextCell.getStringCellValue());
+               && !dataFormatter.formatCellValue(inputTextCell).equals("Input")) {
+                   String inputText = dataFormatter.formatCellValue(inputTextCell);
+                   log.info("inputText: {}", inputText);
+                   String outputText = dataFormatter.formatCellValue(outputTextCell);
+                   excelData.put(inputText, outputText);
                }
            }
        } catch (Exception e) {

@@ -35,8 +35,9 @@ public class TaggerService {
 
 
     public DocumentResponse processRow(String text, String expectedOutput, boolean isLastRow) {
-
+        log.info("text from processRow: {}", text);
         List<String> namesFromOpenNLP = onlpPersonEntityService.identifyPersonNames(text);
+        log.info("namesFromOpenNLP: {}", namesFromOpenNLP);
         List<String> namesInExpectedOutput = extractNamesFromExpectedOutput(expectedOutput);
         String difference = compareNamesWithExpectedOutputContent(namesFromOpenNLP,
                 namesInExpectedOutput);
@@ -66,7 +67,13 @@ public class TaggerService {
             }
         }
 
-        double precision = (double) matchCount / namesInExpectedOutput.size() * 100;
+        double precision;
+        if (namesFromResponse.isEmpty() && namesInExpectedOutput.isEmpty()) {
+            precision = 100;
+        } else {
+            precision = (double) matchCount / namesInExpectedOutput.size() * 100;
+        }
+
 
         System.out.println("Match Count: " + matchCount);
         System.out.printf("Precision: %.2f%%\n", precision);
@@ -138,6 +145,7 @@ public class TaggerService {
         List<DocumentResponse> responses = excelData.entrySet().stream()
                 .map(entry -> {
                     boolean isLastRow = currentRow.incrementAndGet() == totalRows;
+                    log.info("entry.getKey(): {}", entry.getKey());
                     return processRow(entry.getKey(), entry.getValue(), isLastRow);
                 })
                 .toList();
