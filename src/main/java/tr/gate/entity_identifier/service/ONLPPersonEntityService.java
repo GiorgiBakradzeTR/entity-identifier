@@ -41,7 +41,8 @@ public class ONLPPersonEntityService implements EntityService {
         SimpleTokenizer tokenizer = SimpleTokenizer.INSTANCE;
         String[] tokens = tokenizer.tokenize(text);
 
-        Span[] nameSpans = nameFinder.find(tokens);
+        String[] formattedTokens = formatTokensForAllUppercase(tokens);
+        Span[] nameSpans = nameFinder.find(formattedTokens);
 
         Set<String> personNames = new HashSet<>();
         for (Span span : nameSpans) {
@@ -59,6 +60,25 @@ public class ONLPPersonEntityService implements EntityService {
         log.info("personNames: {}", personNames);
         return new ArrayList<>(personNames);
     }
+
+    public static String[] formatTokensForAllUppercase(String[] tokens) {
+        String[] formattedTokens = new String[tokens.length];
+
+        for (int i = 0; i < tokens.length; i++) {
+            String token = tokens[i];
+
+            // Check if the token is all uppercase and longer than one character
+            if (token.length() > 1 && token.equals(token.toUpperCase())) {
+                token = token.toLowerCase();
+                token = Character.toUpperCase(token.charAt(0)) + token.substring(1);
+            }
+
+            formattedTokens[i] = token;
+        }
+
+        return formattedTokens;
+    }
+
 
     private static String removeTrailingPeriodSymbolIfPresent(String text) {
         if (text.endsWith(PERIOD_SYMBOL)) {
