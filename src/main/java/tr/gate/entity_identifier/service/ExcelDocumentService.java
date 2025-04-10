@@ -6,7 +6,6 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import tr.gate.entity_identifier.Accuracy;
-import tr.gate.entity_identifier.payload.DocumentResponse;
 
 import java.io.*;
 import java.util.List;
@@ -15,7 +14,7 @@ import java.util.List;
 @Slf4j
 public class ExcelDocumentService implements DocumentService {
 
-    private static final String FILE_PATH = "updated_data.xlsx";
+    private static final String FILE_PATH = "output_data.xlsx";
     private Workbook workbook;
     private int nextRowNum = 1;
     private Sheet sheet;
@@ -26,7 +25,6 @@ public class ExcelDocumentService implements DocumentService {
     }
 
     private void initializeWorkbook() {
-
         ZipSecureFile.setMinInflateRatio(0.001);
         File file = new File(FILE_PATH);
 
@@ -65,10 +63,9 @@ public class ExcelDocumentService implements DocumentService {
         row.createCell(3).setCellValue(String.join(", ", expectedNames));
         row.createCell(4).setCellValue(difference);
         row.createCell(5).setCellValue(accuracy.getMatchCount());
-//        row.createCell(6).setCellValue(accuracy.getPrecision());
         applyPercentageStyleToColumn(row.createCell(6), accuracy, workbook);
 
-        try (FileOutputStream fileOut = new FileOutputStream("updated_data.xlsx")) {
+        try (FileOutputStream fileOut = new FileOutputStream("output_data.xlsx")) {
 
             workbook.write(fileOut);
             if (isLastRow) {
@@ -79,8 +76,7 @@ public class ExcelDocumentService implements DocumentService {
             throw new RuntimeException("Error writing to excel file", e);
         }
 
-
-        System.out.println("Excel file created: " + "updated_data.xlsx");
+        log.info("Excel file created: {}", "output_data.xlsx");
     }
 
 
@@ -92,7 +88,6 @@ public class ExcelDocumentService implements DocumentService {
     }
 
     private void createHeaderRow(Sheet sheet) {
-
         Row headerRow = sheet.createRow(0);
         headerRow.createCell(0).setCellValue("Input");
         headerRow.createCell(1).setCellValue("Expected Output");

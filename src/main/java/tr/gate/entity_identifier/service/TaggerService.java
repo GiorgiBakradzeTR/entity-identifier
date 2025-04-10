@@ -2,8 +2,6 @@ package tr.gate.entity_identifier.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import tr.gate.entity_identifier.Accuracy;
@@ -20,16 +18,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class TaggerService {
 
     public static final String SEPARATOR_REGEX = "\\|";
-
-    @Value("${jwt.token}")
-    private String jwtToken;
-
     private static final String PERSON_ENTITY_TYPE = "Person";
-
-    private final WebClient webClient;
-
     private final ExcelDataLoader excelDataLoader;
-
     private final ExcelDocumentService excelDocumentService;
     private final ONLPPersonEntityService onlpPersonEntityService;
 
@@ -49,7 +39,6 @@ public class TaggerService {
                 namesInExpectedOutput, difference, accuracy, isLastRow);
 
         return DocumentResponse.builder()
-               // .entity(response.getEntity())
                 .names(namesFromOpenNLP)
                 .difference(difference)
                 .expectedOutput(expectedOutput)
@@ -103,19 +92,7 @@ public class TaggerService {
                 .toList();
     }
 
-    private DocumentResponse callTaggerService(String text) {
-        return webClient.post()
-                .uri("https://api-uat.thomsonreuters.com/trnerr/api/ctrs/tagger/v1/tag?resolutions=all&language=en&class=generic&tags=person")
-                .header(
-                        HttpHeaders.AUTHORIZATION,
-                        "Bearer " + jwtToken
-                )
-                .header(HttpHeaders.ACCEPT, "application/json")
-                .bodyValue(text)
-                .retrieve()
-                .bodyToMono(DocumentResponse.class)
-                .block();
-    }
+
 
     private String compareNamesWithExpectedOutputContent(List<String> namesFromResponse,
                                                          List<String> namesInExpectedOutput) {
